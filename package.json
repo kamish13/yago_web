@@ -1,0 +1,23 @@
+{
+  "name": "yago_web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.13.6",
+    "axios": "^1.2.1",
+    "core-js": "^3.25.3",
+    "fetch": "^1.1.0",
+    "nuxt": "^2.15.8",
+    "nuxt-mail": "^3.0.23",
+    "vue": "^2.7.10",
+    "vue-server-renderer": "^2.7.10",
+    "vue-template-compiler": "^2.7.10"
+  },
+  "devDependencies": {}
+}
