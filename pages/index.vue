@@ -1,53 +1,48 @@
 <template>
   <div class="container">
     <h1 class="title">RC Pro Quote Calculator</h1>
-    <form>
-      <label>First Name</label>
-      <input required type="text" v-model="clientInformation.firstName" />
-      <br />
-      <label>Last Name</label>
-      <input required type="text" v-model="clientInformation.lastName" />
-      <br />
-      <label>Email</label>
-      <input required type="email" v-model="clientInformation.email" />
-      <br />
-      <label>Phone</label>
-      <input required type="text" v-model="clientInformation.phone" />
-      <br />
-      <label>Address</label>
-      <input required type="text" v-model="clientInformation.address" />
-      <br />
-      <label>Annual Revenue</label>
-      <input
-        required
-        type="number"
-        v-model.number="quoteInformation.annualRevenue"
-      />
-      <br />
-      <label>Enterprise Number</label>
-      <input required type="text" v-model="quoteInformation.enterpriseNumber" />
-      <br />
-      <label>Legal Name</label>
-      <input required type="text" v-model="quoteInformation.legalName" />
-      <br />
-      <label>Natural Person</label>
-      <input
-        required
-        type="checkbox"
-        v-model="quoteInformation.naturalPerson"
-      />
-      <br />
-      <label>Nacebel Codes</label>
-      <input required type="text" v-model="quoteInformation.nacebelCode" />
-      <button type="button" @click="pushNacebelCode">Add</button>
-      <!-- display nacebel codes -->
-      <li v-for="nacebelCode in quoteInformation.nacebelCodes">
-        {{ nacebelCode }}
-      </li>
-      <br />
-      <button type="submit" @click="calculateQuote">Calculate Quote</button>
-    </form>
-    <div v-if="results">
+    <label>First Name</label>
+    <input required type="text" v-model="clientInformation.firstName" />
+    <br />
+    <label>Last Name</label>
+    <input required type="text" v-model="clientInformation.lastName" />
+    <br />
+    <label>Email</label>
+    <input required type="email" v-model="clientInformation.email" />
+    <br />
+    <label>Phone</label>
+    <input required type="text" v-model="clientInformation.phone" />
+    <br />
+    <label>Address</label>
+    <input required type="text" v-model="clientInformation.address" />
+    <br />
+    <label>Annual Revenue</label>
+    <input
+      required
+      type="number"
+      v-model.number="quoteInformation.annualRevenue"
+    />
+    <br />
+    <label>Enterprise Number</label>
+    <input required type="text" v-model="quoteInformation.enterpriseNumber" />
+    <br />
+    <label>Legal Name</label>
+    <input required type="text" v-model="quoteInformation.legalName" />
+    <br />
+    <label>Natural Person</label>
+    <input type="checkbox" v-model="quoteInformation.naturalPerson" />
+    <br />
+    <label>Nacebel Codes</label>
+    <input type="text" v-model="quoteInformation.nacebelCode" />
+    <button type="button" @click="pushNacebelCode">Add</button>
+    <!-- display nacebel codes -->
+    <li v-for="nacebelCode in quoteInformation.nacebelCodes">
+      {{ nacebelCode }}
+    </li>
+    <br />
+    <button @click="calculateQuote">Calculate Quote</button>
+
+    <div v-if="success == true">
       <h2>
         Thank you {{ clientInformation.firstName }}. Please see below the quote
         & recommendations. <br />
@@ -86,6 +81,11 @@
       <br />
       <a :href="final_url" target="_blank">{{ final_url }}</a>
     </div>
+    <div v-else-if="success == false && results">
+      <h2>Something went wrong. Please try again</h2>
+      <p>{{ results.message }}</p>
+      <button @click="reset">Reset</button>
+    </div>
   </div>
 </template>
 
@@ -111,6 +111,7 @@ export default {
         nacebelCodes: [],
       },
       results: "",
+      success: "",
       final_url: "",
     };
   },
@@ -124,18 +125,15 @@ export default {
     calculateQuote() {
       // check if data is not empty
       if (
-        this.clientInformation.firstName == "" &&
-        this.clientInformation.lastName == "" &&
-        this.clientInformation.email == "" &&
-        this.clientInformation.phone == "" &&
-        this.clientInformation.address == "" &&
-        this.quoteInformation.annualRevenue == 0 &&
-        this.quoteInformation.enterpriseNumber == "" &&
-        this.quoteInformation.legalName == "" &&
-        this.quoteInformation.nacebelCodes.length == 0
+        this.clientInformation.firstName == "" ||
+        this.clientInformation.lastName == "" ||
+        this.clientInformation.email == "" ||
+        this.clientInformation.phone == "" ||
+        this.clientInformation.address == "" ||
+        this.quoteInformation.enterpriseNumber == "" ||
+        this.quoteInformation.legalName == ""
       ) {
         alert("Please fill in all the fields");
-        return;
       } else {
         fetch("https://yagoapi.herokuapp.com/quotes", {
           method: "POST",
@@ -153,6 +151,7 @@ export default {
           .then((response) => response.json())
           .then((data) => {
             this.results = data.data;
+            this.success = data.success;
           });
       }
     },
@@ -173,6 +172,7 @@ export default {
           nacebelCodes: [],
         }),
         (this.results = "");
+      this.success = "";
     },
     generateUrl() {
       var base_url = window.location.origin;
